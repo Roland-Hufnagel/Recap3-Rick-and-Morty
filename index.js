@@ -13,14 +13,31 @@ const pagination = document.querySelector('[data-js="pagination"]');
 // States
 const maxPage = 1;
 const page = 1;
-const searchQuery = "";
-console.log("Hallo");
-cardContainer.append(
-  createCharacterCard(
-    "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-    "Rick Sanchez",
-    "alive",
-    "",
-    55
-  )
-);
+const searchQuery = "https://rickandmortyapi.com/api/character";
+
+async function fetchCharacters(url) {
+  cardContainer.innerHTML = "";
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return console.error("Something went wrong");
+    }
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+const data = await fetchCharacters(searchQuery);
+data.results.map((date) => {
+  const li = createCharacterCard(
+    date.image,
+    date.name,
+    date.staus,
+    date.type,
+    date.episode.length
+  );
+
+  cardContainer.append(li);
+});
