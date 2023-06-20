@@ -11,33 +11,49 @@ const nextButton = document.querySelector('[data-js="button-next"]');
 const pagination = document.querySelector('[data-js="pagination"]');
 
 // States
-const maxPage = 1;
-const page = 1;
-const searchQuery = "https://rickandmortyapi.com/api/character";
+let maxPage = 1;
+let page = 1;
+const searchQuery = `https://rickandmortyapi.com/api/character?page=${page}`;
 
-async function fetchCharacters(url) {
-  cardContainer.innerHTML = "";
+async function fetchCharacters() {
   try {
-    const response = await fetch(url);
+    const response = await fetch(
+      `https://rickandmortyapi.com/api/character?page=${page}`
+    );
     if (!response.ok) {
       return console.error("Something went wrong");
     }
     const data = await response.json();
     console.log(data);
-    return data;
+    cardContainer.innerHTML = "";
+    data.results.map((date) => {
+      const li = createCharacterCard(
+        date.image,
+        date.name,
+        date.staus,
+        date.type,
+        date.episode.length
+      );
+      cardContainer.append(li);
+    });
+    maxPage = data.info.pages;
+    pagination.textContent = `${page} / ${maxPage}`;
   } catch (error) {
     console.error(error);
   }
 }
-const data = await fetchCharacters(searchQuery);
-data.results.map((date) => {
-  const li = createCharacterCard(
-    date.image,
-    date.name,
-    date.staus,
-    date.type,
-    date.episode.length
-  );
-
-  cardContainer.append(li);
+fetchCharacters();
+nextButton.addEventListener("click", () => {
+  if (page < maxPage) {
+    console.log("Next clicked", page);
+    page++;
+    fetchCharacters();
+  }
+});
+prevButton.addEventListener("click", () => {
+  if (page > 1) {
+    console.log("Next clicked", page);
+    page--;
+    fetchCharacters();
+  }
 });
